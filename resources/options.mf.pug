@@ -1,0 +1,11 @@
+section
+
+  field(name='other-mouse' type='checkbox')
+
+  field(name='mouse' type='select')
+    option --
+    option(name='conventional-priority') конвенционный приоритет
+
+
+  field(name='something-for-conventional-mouse' requires='mouse.conventional-priority other-mouse' type='text')
+

@@ -1,0 +1,21 @@
+mixin document-fields 
+  field(type='number' name='page-ct')
+    label Кол-во листов
+  field(type='number' name='original-ct')
+    label Кол-во экземпляров
+
+mixin document-group(name)
+  group(name=name requires=`${name}-select`)
+    +document-fields
+
+
+section(name='additional-documents')
+  title Перечень прилагаемых документов
+  field(type='multi-select' name='document')
+    label Перечень документов
+    option(name='trademark-select') заявляемое обозначение
+    option(name='other-document-select') другой документ
+
+  +document-group('trademark')
+  +document-group('other-document')
+

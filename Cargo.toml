@@ -1,0 +1,18 @@
+[package]
+name = "mouse_forms"
+version = "0.1.0"
+authors = ["Andrew Breidenbach <breidenbach.aj@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name ="mouse_forms"
+path = "src/lib.rs"
+
+[dependencies]
+xml-rs = "0.8.3"
+pug_cli = {path = "../pug_cli"}
+serde = {version = "1.0.116", features = ["derive"]}
+serde_yaml = "0.8.13"
+serde_json = "1.0.57"
+clap = "2.33.3"
