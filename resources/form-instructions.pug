@@ -5,9 +5,16 @@ title Test Form With Instructions
 
 language en
 
-instructions 
-  h1.content(style='color:red;') here are some instructions for filing out this form
-  main 
-    p here's some content
-    p here's some more content
+section(name='part-one')
+  instructions 
+    h1.content(style='color:red;') here are some instructions for filing out this form
+    main 
+      p here's some content
+      p here's some more content
+
+  group(name='some-group' requires='???')
+    field(name='some-field' type='text')
+      label Some field
+      instructions
+        p hello world
 

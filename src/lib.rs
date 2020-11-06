@@ -42,8 +42,9 @@ pub struct Form {
     title: Option<String>,
     unlisted: bool,
     description: Option<String>,
-    instructions: Option<String>,
     embedded_script: Option<String>,
+    category: Option<String>,
+    index: u32,
     stylesheet: Option<String>,
     sections: Vec<FormSection>,
     language: Option<String>,
@@ -55,7 +56,8 @@ impl Form {
             title: None,
             unlisted: false,
             description: None,
-            instructions: None,
+            category: None,
+            index: std::u32::MAX,
             embedded_script: None,
             stylesheet: None,
             sections: vec![],
@@ -68,6 +70,7 @@ impl Form {
 struct FormSection {
     name: String,
     title: Option<String>,
+    instructions: Option<String>,
     elements: Vec<FormElement>,
     attributes: ElementAttributes,
 }
@@ -134,6 +137,7 @@ impl TryFrom<Vec<OwnedAttribute>> for FormSection {
         Ok(Self {
             attributes: self_attributes,
             name,
+            instructions: None,
             title: None,
             elements: Vec::new(),
         })
@@ -223,6 +227,9 @@ enum FieldType {
     MultiSelect,
     TextArea,
     Date,
+    Email,
+    Tel,
+    Url,
 }
 
 impl TryFrom<String> for FieldType {
@@ -238,6 +245,9 @@ impl TryFrom<String> for FieldType {
             "file" => Ok(FieldType::File),
             "image" => Ok(FieldType::Image),
             "textarea" => Ok(FieldType::TextArea),
+            "email" => Ok(FieldType::Email),
+            "tel" => Ok(FieldType::Tel),
+            "url" => Ok(FieldType::Url),
             _ => Err(SyntacticError::InvalidFieldType { invalid_type: s }),
         }
     }
@@ -247,6 +257,7 @@ impl TryFrom<String> for FieldType {
 struct FormField {
     name: String,
     field_type: FieldType,
+    instructions: Option<String>,
     label: Option<String>,
     attributes: ElementAttributes,
     options: Vec<FieldOption>,
@@ -282,6 +293,7 @@ impl TryFrom<Vec<OwnedAttribute>> for FormField {
         Ok(Self {
             name,
             field_type,
+            instructions: None,
             label: None,
             attributes: self_attributes,
             options: Vec::with_capacity(0),
@@ -428,6 +440,14 @@ impl FormParser {
                 self.form.language = Some(self.characters);
                 self.characters = String::new();
             }
+            "category" => {
+                self.form.category = Some(self.characters);
+                self.characters = String::new()
+            }
+            "index" => {
+                self.form.index = self.characters.parse().unwrap_or(std::u32::MAX);
+                self.characters = String::new()
+            }
 
             "script" => {
                 self.form.embedded_script = Some(self.characters);
@@ -512,7 +532,16 @@ impl FormParser {
         if let Some(mut instructions) = self.current_instructions {
             if let XmlEvent::EndElement { name } = &event {
                 if name.local_name == "instructions" {
-                    self.form.instructions = Some(instructions);
+                    if let Some(ref mut field) = self.current_field {
+                        field.instructions = Some(instructions)
+                    } else if let Some(ref mut section) = self.current_section {
+                        section.instructions = Some(instructions);
+                    } else {
+                        return Err(SyntacticError::OrphanElement {
+                            context: String::from("instructions have no section parent"),
+                        });
+                    }
+                    self.path.pop();
                     self.current_instructions = None;
                 } else {
                     instructions.push_str(&stringify_xml_event(event));
@@ -674,16 +703,6 @@ impl TryFrom<String> for Form {
         Form::try_from(event_reader)
     }
 }
-
-static INDEX_PUG: &'static str = include_str!("pug/index.pug");
-
-pub fn compile_form(file: impl Into<PathBuf>) -> Result<String, MouseFormsError> {
-    let j = compile_to_json_str(file)?;
-    let pug_options = pug::PugOptions::new().with_object(j);
-    pug::evaluate_string_with_options(String::from(INDEX_PUG), pug_options)
-        .map_err(|e| MouseFormsError::Pug(e))
-}
-
 pub fn compile_to_json_str(file: impl Into<PathBuf>) -> Result<String, MouseFormsError> {
     let xml = pug::evaluate(file).map_err(|e| MouseFormsError::Pug(e))?;
     let mouse_form = Form::try_from(xml).map_err(|e| MouseFormsError::FormParser(e))?;
