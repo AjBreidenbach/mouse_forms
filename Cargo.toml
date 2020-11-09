@@ -11,7 +11,7 @@ path = "src/lib.rs"
 
 [dependencies]
 xml-rs = "0.8.3"
-pug_cli = {path = "../pug_cli"}
+pug_cli = {git = "https://github.com/AjBreidenbach/pug_cli", branch = "main"}
 serde = {version = "1.0.116", features = ["derive"]}
 serde_yaml = "0.8.13"
 serde_json = "1.0.57"

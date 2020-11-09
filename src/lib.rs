@@ -105,7 +105,7 @@ impl ElementAttributes {
             "optional-if" => self.optional_if = Some(value),
             "class" => self.class = Some(value),
             _ => {
-                return Err(SyntacticError::UnrecognizedAttribute {
+                return Err(SyntacticError::InvalidAttribute {
                     attribute_name,
                     context: context.clone(),
                 })
@@ -119,7 +119,7 @@ impl TryFrom<Vec<OwnedAttribute>> for FormSection {
     fn try_from(attributes: Vec<OwnedAttribute>) -> Result<Self, Self::Error> {
         let mut name = None;
         let mut self_attributes = ElementAttributes::new();
-        let context = String::from("section");
+        let context = String::from("section; attribute is unrecognized");
 
         for attribute in attributes {
             let attribute_name = attribute.name.local_name;
@@ -259,6 +259,8 @@ struct FormField {
     field_type: FieldType,
     instructions: Option<String>,
     label: Option<String>,
+    length: u16,
+    placeholder: Option<String>,
     attributes: ElementAttributes,
     options: Vec<FieldOption>,
 }
@@ -269,7 +271,9 @@ impl TryFrom<Vec<OwnedAttribute>> for FormField {
         let mut name = None;
         let mut self_attributes = ElementAttributes::new();
         let mut field_type = None;
-        let context = String::from("field");
+        let mut placeholder = None;
+        let mut length = 0u16;
+        let context = String::from("field; unrecognized attribute");
 
         for attribute in attributes {
             let attribute_name = attribute.name.local_name;
@@ -278,6 +282,15 @@ impl TryFrom<Vec<OwnedAttribute>> for FormField {
             match attribute_name.as_str() {
                 "name" => name = Some(value),
                 "type" => field_type = Some(FieldType::try_from(value)?),
+                "placeholder" => placeholder = Some(value),
+                "length" => {
+                    length = value
+                        .parse()
+                        .map_err(|_e| SyntacticError::InvalidAttribute {
+                            attribute_name: String::from("length"),
+                            context: String::from("field; length should be a whole number"),
+                        })?
+                }
                 _ => self_attributes.try_apply(attribute_name, value, &context)?,
             }
         }
@@ -294,7 +307,9 @@ impl TryFrom<Vec<OwnedAttribute>> for FormField {
             name,
             field_type,
             instructions: None,
+            length,
             label: None,
+            placeholder,
             attributes: self_attributes,
             options: Vec::with_capacity(0),
         })
@@ -576,7 +591,7 @@ pub enum SyntacticError {
         open_tag: Option<String>,
         closing_tag: String,
     },
-    UnrecognizedAttribute {
+    InvalidAttribute {
         attribute_name: String,
         context: String,
     },
@@ -610,12 +625,12 @@ impl fmt::Display for SyntacticError {
                 "expected matching opening tag for {}, but got {:?}",
                 closing_tag, open_tag
             ),
-            SyntacticError::UnrecognizedAttribute {
+            SyntacticError::InvalidAttribute {
                 attribute_name,
                 context,
             } => write!(
                 f,
-                "encountered unrecognized attribute name {} in {}",
+                "encountered invalid attribute name {} in {}",
                 attribute_name, context
             ),
             SyntacticError::InvalidFieldType { invalid_type } => {
@@ -736,6 +751,17 @@ mod tests {
     fn form_instructions() {
         do_a_file("resources/form-instructions.pug").unwrap();
     }
+
+    #[test]
+    fn placeholder() {
+        do_a_file("resources/placeholder.pug").unwrap();
+    }
+
+    #[test]
+    fn length() {
+        do_a_file("resources/length.pug").unwrap();
+    }
+
     /*
     #[test]
     fn it_works_again() {
