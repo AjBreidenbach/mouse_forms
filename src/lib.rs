@@ -230,6 +230,7 @@ enum FieldType {
     Email,
     Tel,
     Url,
+    Grid,
 }
 
 impl TryFrom<String> for FieldType {
@@ -248,6 +249,7 @@ impl TryFrom<String> for FieldType {
             "email" => Ok(FieldType::Email),
             "tel" => Ok(FieldType::Tel),
             "url" => Ok(FieldType::Url),
+            "grid" => Ok(FieldType::Grid),
             _ => Err(SyntacticError::InvalidFieldType { invalid_type: s }),
         }
     }
@@ -262,7 +264,25 @@ struct FormField {
     length: u16,
     placeholder: Option<String>,
     attributes: ElementAttributes,
+    rows: Vec<u16>,
     options: Vec<FieldOption>,
+}
+
+impl FormField {
+    fn parse_rows(s: String) -> Result<Vec<u16>, SyntacticError> {
+        let mut result = Vec::new();
+        for cell in s.split(' ') {
+            if let Ok(dim) = cell.parse::<u16>() {
+                result.push(dim)
+            } else {
+                return Err(SyntacticError::InvalidAttribute {
+                    attribute_name: String::from("rows"),
+                    context: format!("could not parse the value of rows attribute: {}", s),
+                });
+            }
+        }
+        Ok(result)
+    }
 }
 
 impl TryFrom<Vec<OwnedAttribute>> for FormField {
@@ -273,6 +293,7 @@ impl TryFrom<Vec<OwnedAttribute>> for FormField {
         let mut field_type = None;
         let mut placeholder = None;
         let mut length = 0u16;
+        let mut rows = Vec::with_capacity(0);
         let context = String::from("field; unrecognized attribute");
 
         for attribute in attributes {
@@ -283,6 +304,7 @@ impl TryFrom<Vec<OwnedAttribute>> for FormField {
                 "name" => name = Some(value),
                 "type" => field_type = Some(FieldType::try_from(value)?),
                 "placeholder" => placeholder = Some(value),
+                "rows" => rows = FormField::parse_rows(value)?,
                 "length" => {
                     length = value
                         .parse()
@@ -308,6 +330,7 @@ impl TryFrom<Vec<OwnedAttribute>> for FormField {
             field_type,
             instructions: None,
             length,
+            rows,
             label: None,
             placeholder,
             attributes: self_attributes,
@@ -762,6 +785,10 @@ mod tests {
         do_a_file("resources/length.pug").unwrap();
     }
 
+    #[test]
+    fn rows() {
+        do_a_file("resources/rows.pug").unwrap();
+    }
     /*
     #[test]
     fn it_works_again() {
