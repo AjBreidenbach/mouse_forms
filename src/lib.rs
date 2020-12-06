@@ -172,6 +172,7 @@ impl TryFrom<String> for GroupType {
 struct FormGroup {
     name: String,
     title: Option<String>,
+    instructions: Option<String>,
     members: Vec<FormField>,
     group_type: GroupType,
     attributes: ElementAttributes,
@@ -210,6 +211,7 @@ impl TryFrom<Vec<OwnedAttribute>> for FormGroup {
             name,
             group_type,
             title: None,
+            instructions: None,
             attributes: self_attributes,
             members: Vec::new(),
         })
@@ -572,6 +574,8 @@ impl FormParser {
                 if name.local_name == "instructions" {
                     if let Some(ref mut field) = self.current_field {
                         field.instructions = Some(instructions)
+                    } else if let Some(ref mut group) = self.current_group {
+                        group.instructions = Some(instructions);
                     } else if let Some(ref mut section) = self.current_section {
                         section.instructions = Some(instructions);
                     } else {
@@ -773,6 +777,11 @@ mod tests {
     #[test]
     fn form_instructions() {
         do_a_file("resources/form-instructions.pug").unwrap();
+    }
+
+    #[test]
+    fn group_instructions() {
+        do_a_file("resources/group-instructions.mf.pug").unwrap();
     }
 
     #[test]
