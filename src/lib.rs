@@ -44,6 +44,7 @@ pub struct Form {
     description: Option<String>,
     embedded_script: Option<String>,
     category: Option<String>,
+    link: Option<String>,
     index: u32,
     stylesheet: Option<String>,
     sections: Vec<FormSection>,
@@ -57,6 +58,7 @@ impl Form {
             unlisted: false,
             description: None,
             category: None,
+            link: None,
             index: std::u32::MAX,
             embedded_script: None,
             stylesheet: None,
@@ -476,6 +478,11 @@ impl FormParser {
                 self.form.description = Some(self.characters);
                 self.characters = String::new();
             }
+            "link" => {
+                self.form.link = Some(self.characters);
+                self.characters = String::new();
+            }
+
             "language" => {
                 self.form.language = Some(self.characters);
                 self.characters = String::new();
@@ -746,7 +753,8 @@ impl TryFrom<String> for Form {
     }
 }
 pub fn compile_to_json_str(file: impl Into<PathBuf>) -> Result<String, MouseFormsError> {
-    let xml = pug::evaluate(file).map_err(|e| MouseFormsError::Pug(e))?;
+    let pug_options = pug::PugOptions::new().doctype("xml".into());
+    let xml = pug::evaluate_with_options(file, pug_options).map_err(|e| MouseFormsError::Pug(e))?;
     let mouse_form = Form::try_from(xml).map_err(|e| MouseFormsError::FormParser(e))?;
     let j = serde_json::to_string(&mouse_form).unwrap();
     Ok(j)
@@ -756,7 +764,9 @@ pub fn compile_to_json_str_with_obj(
     file: impl Into<PathBuf>,
     object: String,
 ) -> Result<String, MouseFormsError> {
-    let pug_options = pug::PugOptions::new().with_object(object);
+    let pug_options = pug::PugOptions::new()
+        .with_object(object)
+        .doctype("xml".into());
     let xml = pug::evaluate_with_options(file, pug_options).map_err(|e| MouseFormsError::Pug(e))?;
     let mouse_form = Form::try_from(xml).map_err(|e| MouseFormsError::FormParser(e))?;
     let j = serde_json::to_string(&mouse_form).unwrap();
@@ -768,12 +778,16 @@ mod tests {
     use super::*;
 
     fn do_a_file(pug: &str) -> Result<(), Box<dyn error::Error>> {
-        let xml = pug::evaluate(pug)?;
+        let xml = pug::evaluate_with_options(pug, pug::PugOptions::new().doctype("xml".into()))?;
         let mouse_form = Form::try_from(xml)?;
         println!("{}", serde_yaml::to_string(&mouse_form)?);
         Ok(())
     }
 
+    #[test]
+    fn link() {
+        do_a_file("resources/link.pug").unwrap();
+    }
     #[test]
     fn form_instructions() {
         do_a_file("resources/form-instructions.pug").unwrap();
