@@ -44,11 +44,13 @@ pub struct Form {
     description: Option<String>,
     embedded_script: Option<String>,
     category: Option<String>,
+    instructions: Option<String>,
     link: Option<String>,
     index: u32,
     stylesheet: Option<String>,
     sections: Vec<FormSection>,
     language: Option<String>,
+    keywords: Option<String>,
 }
 
 impl Form {
@@ -59,11 +61,13 @@ impl Form {
             description: None,
             category: None,
             link: None,
+            instructions: None,
             index: std::u32::MAX,
             embedded_script: None,
             stylesheet: None,
             sections: vec![],
             language: None,
+            keywords: None,
         }
     }
 }
@@ -487,6 +491,10 @@ impl FormParser {
                 self.form.language = Some(self.characters);
                 self.characters = String::new();
             }
+            "keywords" => {
+                self.form.keywords = Some(self.characters);
+                self.characters = String::new();
+            }
             "category" => {
                 self.form.category = Some(self.characters);
                 self.characters = String::new()
@@ -586,9 +594,7 @@ impl FormParser {
                     } else if let Some(ref mut section) = self.current_section {
                         section.instructions = Some(instructions);
                     } else {
-                        return Err(SyntacticError::OrphanElement {
-                            context: String::from("instructions have no section parent"),
-                        });
+                        self.form.instructions = Some(instructions);
                     }
                     self.path.pop();
                     self.current_instructions = None;
