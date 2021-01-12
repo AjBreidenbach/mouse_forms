@@ -1,0 +1,136 @@
+title Заявление на получение патента (утв. приказом ФНС России от 11.07.2017 № ММВ-7-3/544@)
+category Налогообложение
+index 0
+description 
+
+section(name='general')
+    title Общие сведения
+    field(name='page-number' type='number' placeholder='001') Номер страницы заявления
+    field(name='office-code' type='text') Код налогового органа, куда подается заявление
+    field(name='surname' type='text') Фамилия
+    field(name='name' type='text') Имя
+    field(name='patronymic' type='text') Отчество
+    field(name='tax-number' type='number') ИНН
+    field(name='reg-number' type='number') ОГРНИП
+    group(name='address' type='subsection')
+        title Адрес места жительства (места пребывания) в РФ
+        field(name='zip-code' type='text') Почтовый индекс
+        field(name='oblast-code' type='number') Код субъекта РФ
+        field(name='region' type='text') Район
+        field(name='city' type='text') Город
+        field(name='village' type='text') Населенный пункт (село, поселок)
+        field(name='street' type='text') Улица (проспект, переулок)
+        field(name='house-number' type='text') Номер дома (владения)
+        field(name='building-number' type='text') Номер корпуса (строения)
+        field(name='apartment-number' type='text') Номер квартиры
+    group(name='patent' type='subsection')
+        field(name='duration' type='number') Запрашиваемый срок действия патента (в месяцах)
+        field(name='issue-date' type='date') Дата начала срока действия патента
+    group(name='application' type='subsection')
+        field(name='applicant' type='select')
+            label Заявление подается: 
+            option(name='none') --
+            option(name='businessman') индивидуальным предпринимателем
+            option(name='representative') представителем
+        field(name='phone' type='tel') Номер контактного телефона
+        field(name='date' type='date') Дата подписания заявления
+        field(name='pages' type='number') Количество страниц в заявлении
+        field(name='sheets' type='number') Количество дополнительных листов, прилагаемых к заявлению
+    group(name='representative' type='subsection' requires='general.application.applicant#representative')
+        field(name='name' type='grid' rows='20 20 20') ФИО представителя
+        field(name='authority' type='grid' rows='20 20') Название и реквизиты документа, подтверждающего полномочия предстаителя
+
+section(name='activities') 
+    title Сведения о предпринимательской деятельности
+    field(name='page-number' type='number' placeholder='002') Номер страницы заявления
+    field(name='type' type='grid' rows='40 40 40 40 40 40 40 40 40 40 40 40 40 40') Вид предпринимательской деятельности, в отношении которого испрашивается патент
+    field(name='code' type='text') Идентификационный номер вида предпринимательской деятельности
+    group(name='workers' type='subsection')
+        field(name='presence' type='select') Указанный вид деятельность осуществляется с:
+            option(name='with') с привлечением наемных работников, в т.ч. по гражданско-правовым договорам
+            option(name='without') без привлечения наемных работников
+        field(name='amount' type='number') Средняя численность наемных работников
+            instructions или 0, если наемные работники не привлекаются
+    field(name='tax-percentage' type='number') Размер налоговой ставки, применяемой ИП (в процентах)
+    field(name='tax-law' type='grid' rows='40 40') Размер налоговой ставки установлен:
+        instructions ссылка на норму закона субъекта РФ
+
+section(name='location')
+    title Сведения о месте осуществления предпринимательской деятельности (лист А)
+    field(name='page-number' type='number') Номер страницы заявления (003, 004, 005, 006, 007 и т.д.)
+    field(name='office-code' type='text') Код налогового органа по месту осуществления предпринимательской деятельности
+    field(name='oblast-code' type='number') Код субъекта РФ места осуществления предпринимательской деятельности
+    group(name='address' type='subsection')
+        title Адрес осуществления предпринимательской деятельности
+        field(name='zip-code' type='text') Почтовый индекс
+        field(name='oblast-code' type='number') Код субъекта РФ
+        field(name='region' type='text') Район
+        field(name='city' type='text') Город
+        field(name='village' type='text') Населенный пункт (село, поселок)
+        field(name='street' type='text') Улица (проспект, переулок)
+        field(name='house-number' type='text') Номер дома (владения)
+        field(name='building-number' type='text') Номер корпуса (строения)
+        field(name='office-number' type='text') Номер квартиры (офиса)
+    group(type='subsection' name='a2' optional)
+        title Добавить адрес
+        field(name='zip-code' type='text') Почтовый индекс
+        field(name='oblast-code' type='number') Код субъекта РФ
+        field(name='region' type='text') Район
+        field(name='city' type='text') Город
+        field(name='village' type='text') Населенный пункт (село, поселок)
+        field(name='street' type='text') Улица (проспект, переулок)
+        field(name='house-number' type='text') Номер дома (владения)
+        field(name='building-number' type='text') Номер корпуса (строения)
+        field(name='office-number' type='text') Номер квартиры (офиса)
+    group(type='subsection' name='a3' optional)
+        title Добавить адрес
+        field(name='zip-code' type='text') Почтовый индекс
+        field(name='oblast-code' type='number') Код субъекта РФ
+        field(name='region' type='text') Район
+        field(name='city' type='text') Город
+        field(name='village' type='text') Населенный пункт (село, поселок)
+        field(name='street' type='text') Улица (проспект, переулок)
+        field(name='house-number' type='text') Номер дома (владения)
+        field(name='building-number' type='text') Номер корпуса (строения)
+        field(name='office-number' type='text') Номер квартиры (офиса)
+
+    section(name='transport')
+        title Сведения о транспортных средствах, используемых в предпринимательской деятельности (лист Б)
+        field(name='page-number' type='number') Номер страницы заявления (003, 004, 005, 006, 007 и т.д.)
+        field(name='office-code' type='text') Код налогового органа по месту осуществления предпринимательской деятельности
+        field(name='oblast-code' type='number') Код субъекта РФ места осуществления предпринимательской деятельности
+        field(name='type-code' type='text') Код типа транспортного средства
+        group(name='car' type='subsection')
+            field(name='identification-code' type='text') Индентификационный номер транспортного средства
+            field(name='brand' type='text') Марка транспортного средства
+            field(name='register-sign' type='text') Регистрационный знак транспортного средства
+            field(name='lifting-capacity' type='number') Грузоподъемность (в тоннах)
+            field(name='seats' type='number') Количество посадочных мест
+        group(name='c2' type='subsection')
+            title Добавить транспортное средство
+            field(name='identification-code' type='text') Индентификационный номер транспортного средства
+            field(name='brand' type='text') Марка транспортного средства
+            field(name='register-sign' type='text') Регистрационный знак транспортного средства
+            field(name='lifting-capacity' type='number') Грузоподъемность (в тоннах)
+            field(name='seats' type='number') Количество посадочных мест
+
+    section(name='objects')
+        title Сведения по каждому объекту, используемому в предпринимательской деятельности (лист В)
+        field(name='page-number' type='number') Номер страницы заявления (003, 004, 005, 006, 007 и т.д.)
+        field(name='office-code' type='text') Код налогового органа по месту осуществления предпринимательской деятельности
+        field(name='oblast-code' type='number') Код субъекта РФ места осуществления предпринимательской деятельности
+        field(name='code' type='text') Код вида объекта
+        field(name='type' type='text') Признак объекта
+        field(name='square' type='number') Площадь объекта (кв.м)
+        group(name='address' type='subsection')
+            field(name='zip-code' type='text') Почтовый индекс
+            field(name='oblast-code' type='number') Код субъекта РФ
+            field(name='region' type='text') Район
+            field(name='city' type='text') Город
+            field(name='village' type='text') Населенный пункт (село, поселок)
+            field(name='street' type='text') Улица (проспект, переулок)
+            field(name='house-number' type='text') Номер дома (владения)
+            field(name='building-number' type='text') Номер корпуса (строения)
+            field(name='office-number' type='text') Номер квартиры (офиса)
+
+

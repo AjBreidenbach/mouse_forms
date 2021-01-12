@@ -419,13 +419,21 @@ impl FormParser {
 
         match name.as_str() {
             "section" => {
+                if let Some(section) = self.current_section {
+                    return Err(SyntacticError::ImproperNesting {
+                        context: format!(
+                            "section '{}' should not contain another section",
+                            section.name
+                        ),
+                    });
+                }
                 let section = FormSection::try_from(attributes)?;
                 self.current_section = Some(section);
             }
             "field" => {
                 if let Some(field) = self.current_field {
                     return Err(SyntacticError::ImproperNesting {
-                        context: format!("field {} should not contain another field", field.name),
+                        context: format!("field '{}' should not contain another field", field.name),
                     });
                 }
 
@@ -788,6 +796,27 @@ mod tests {
         let mouse_form = Form::try_from(xml)?;
         println!("{}", serde_yaml::to_string(&mouse_form)?);
         Ok(())
+    }
+
+    #[test]
+    fn nested_sections() {
+        // I'm doubt I did this right :D
+        let xml = pug::evaluate_with_options(
+            "resources/tax-patent.mf.pug",
+            pug::PugOptions::new().doctype("xml".into()),
+        )
+        .unwrap();
+        let mouse_form = Form::try_from(xml);
+        let mut is_improper_nesting_error = false;
+        if let Err(e) = mouse_form {
+            if let FormParserError::Syntax(pe) = e {
+                if let SyntacticError::ImproperNesting { context } = pe {
+                    is_improper_nesting_error = true;
+                }
+            }
+        }
+        assert!(is_improper_nesting_error);
+        //do_a_file("resources/tax-patent.mf.pug").unwrap();
     }
 
     #[test]
