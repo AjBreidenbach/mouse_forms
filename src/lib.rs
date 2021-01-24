@@ -42,7 +42,7 @@ pub struct Form {
     title: Option<String>,
     unlisted: bool,
     description: Option<String>,
-    embedded_script: Option<String>,
+    embedded_scripts: Vec<String>,
     category: Option<String>,
     instructions: Option<String>,
     link: Option<String>,
@@ -63,7 +63,7 @@ impl Form {
             link: None,
             instructions: None,
             index: std::u32::MAX,
-            embedded_script: None,
+            embedded_scripts: Vec::with_capacity(0),
             stylesheet: None,
             sections: vec![],
             language: None,
@@ -513,7 +513,7 @@ impl FormParser {
             }
 
             "script" => {
-                self.form.embedded_script = Some(self.characters);
+                self.form.embedded_scripts.push(self.characters);
                 self.characters = String::new();
             }
             "style" => {
@@ -823,6 +823,12 @@ mod tests {
     fn link() {
         do_a_file("resources/link.pug").unwrap();
     }
+
+    #[test]
+    fn scripts() {
+        do_a_file("resources/multiple-scripts.mf.pug").unwrap();
+    }
+
     #[test]
     fn form_instructions() {
         do_a_file("resources/form-instructions.pug").unwrap();
