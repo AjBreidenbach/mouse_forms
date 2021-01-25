@@ -42,6 +42,8 @@ pub struct Form {
     title: Option<String>,
     unlisted: bool,
     description: Option<String>,
+    meta_description: Option<String>,
+    dir_description: Option<String>,
     embedded_scripts: Vec<String>,
     category: Option<String>,
     instructions: Option<String>,
@@ -59,6 +61,8 @@ impl Form {
             title: None,
             unlisted: false,
             description: None,
+            meta_description: None,
+            dir_description: None,
             category: None,
             link: None,
             instructions: None,
@@ -487,7 +491,17 @@ impl FormParser {
                 self.characters = String::new();
             }
             "description" => {
+                self.form.meta_description = Some(self.characters.clone());
+                self.form.dir_description = Some(self.characters.clone());
                 self.form.description = Some(self.characters);
+                self.characters = String::new();
+            }
+            "meta-description" => {
+                self.form.meta_description = Some(self.characters);
+                self.characters = String::new();
+            }
+            "dir-description" => {
+                self.form.dir_description = Some(self.characters);
                 self.characters = String::new();
             }
             "link" => {
@@ -852,6 +866,11 @@ mod tests {
     #[test]
     fn rows() {
         do_a_file("resources/rows.pug").unwrap();
+    }
+
+    #[test]
+    fn descriptions() {
+        do_a_file("resources/descriptions.pug").unwrap();
     }
     /*
     #[test]
