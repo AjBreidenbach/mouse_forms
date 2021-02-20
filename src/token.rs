@@ -3,8 +3,32 @@ use std::path::PathBuf;
 use xml::reader::{self, EventReader, XmlEvent};
 use xml::{attribute::OwnedAttribute, name::OwnedName};
 
+fn stringify_xml_event(xml_event: XmlEvent) -> String {
+    match xml_event {
+        XmlEvent::StartElement {
+            name,
+            attributes,
+            namespace,
+        } => format!(
+            "<{}{}>",
+            name.local_name,
+            attributes
+                .into_iter()
+                .fold(String::with_capacity(0), |acc, attribute| {
+                    format!(
+                        "{} {}=\"{}\"",
+                        acc, attribute.name.local_name, attribute.value
+                    )
+                })
+        ),
+        XmlEvent::EndElement { name } => format!("</{}>", name.local_name),
+        XmlEvent::Characters(characters) => characters,
+        _ => String::with_capacity(0),
+    }
+}
+
 #[derive(Debug)]
-enum Token {
+pub enum Token {
     Category {
         characters: String,
         lang: Option<String>,
@@ -43,9 +67,6 @@ enum Token {
         characters: String,
         lang: Option<String>,
     },
-    Language {
-        characters: String,
-    },
     Script {
         characters: String,
     },
@@ -74,21 +95,29 @@ enum Token {
 }
 
 #[derive(Debug)]
-struct TokenStream {
-    tokens: Vec<Token>,
+pub struct TokenBuffer {
+    pub tokens: Vec<Token>,
     alternates: Vec<String>,
     characters: Option<String>,
+    // lang refers to lang attribute
     lang: Option<String>,
+    instructions: Option<String>,
+    // refers to default language of this form
+    language: Option<String>,
 }
 
-impl TokenStream {
-    fn from_readable_xml(source: impl std::io::Read) -> Result<TokenStream, xml::reader::Error> {
+impl TokenBuffer {
+    pub fn from_readable_xml(
+        source: impl std::io::Read,
+    ) -> Result<TokenBuffer, xml::reader::Error> {
         let event_reader = EventReader::new(source);
-        let mut token_stream = TokenStream {
+        let mut token_stream = TokenBuffer {
             tokens: Vec::new(),
             alternates: Vec::new(),
             characters: None,
             lang: None,
+            instructions: None,
+            language: None,
         };
 
         for event in event_reader {
@@ -98,34 +127,50 @@ impl TokenStream {
         return Ok(token_stream);
     }
 
-    fn from_file(source: impl Into<PathBuf>) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    pub fn from_file(
+        source: impl Into<PathBuf>,
+    ) -> Result<TokenBuffer, Box<dyn std::error::Error>> {
         let pug_options = pug::PugOptions::new().doctype("xml".into());
         let xml = pug::evaluate_with_options(source, pug_options)?;
         return Ok(Self::from_readable_xml(xml.as_bytes())?);
     }
 
+    fn set_lang(&mut self, attributes: Vec<OwnedAttribute>) {
+        self.lang = attributes
+            .into_iter()
+            .find(|a| &a.name.local_name == "lang")
+            .map(|a| a.value)
+    }
+
     fn on_start(&mut self, name: OwnedName, attributes: Vec<OwnedAttribute>) {
         match name.local_name.as_str() {
             "category" | "description" | "dir-description" | "meta-description" | "title"
-            | "label" | "keywords" => {
-                self.lang = attributes
-                    .into_iter()
-                    .find(|a| &a.name.local_name == "lang")
-                    .map(|a| a.value)
-            }
-            "link" | "script" | "style" | "index" | "language" => {}
+            | "label" | "keywords" => self.set_lang(attributes),
+            "link" | "script" | "style" | "index" => {}
             "option" => self.tokens.push(Token::Option { attributes }),
             "field" => self.tokens.push(Token::Field { attributes }),
             "group" => self.tokens.push(Token::Group { attributes }),
             "section" => self.tokens.push(Token::Section { attributes }),
+            "instructions" => {
+                self.set_lang(attributes);
+                self.instructions = Some(String::new());
+            }
 
             _ => {} // TODO error
         }
     }
     fn on_end(&mut self, name: OwnedName) {
-        let lang = self.lang.take();
-        let characters = self.characters.take().unwrap_or_default();
+        let lang = self.lang.take().or_else(|| self.language.clone());
+        let mut characters = self.characters.take().unwrap_or_default();
+        if let Some(instructions) = self.instructions.take() {
+            characters = instructions
+        }
+
         let token = match name.local_name.as_str() {
+            "language" => {
+                self.language = Some(characters);
+                Token::None
+            }
             "category" => Token::Category { characters, lang },
             "description" => Token::Description { characters, lang },
             "dir-description" => Token::DirDescription { characters, lang },
@@ -140,7 +185,7 @@ impl TokenStream {
             "index" => Token::Index {
                 position: characters.parse().unwrap_or_default(),
             },
-            "language" => Token::Language { characters },
+            "instructions" => Token::Instructions { characters, lang },
             "option" => Token::OptionEnd,
             "field" => Token::FieldEnd,
             "group" => Token::GroupEnd,
@@ -148,10 +193,28 @@ impl TokenStream {
             _ => Token::None,
         };
 
-        self.tokens.push(token);
+        match token {
+            Token::None => {}
+            _ => self.tokens.push(token),
+        }
     }
 
     fn dispatch_event(&mut self, event: XmlEvent) {
+        if let Some(mut instructions) = self.instructions.take() {
+            let mut resume = false;
+            if let XmlEvent::EndElement { name } = &event {
+                if name.local_name == "instructions" {
+                    resume = true;
+                }
+            }
+            if resume {
+                self.instructions = Some(instructions);
+            } else {
+                instructions.push_str(&stringify_xml_event(event));
+                self.instructions = Some(instructions);
+                return;
+            }
+        }
         match event {
             XmlEvent::StartElement {
                 name,
@@ -171,7 +234,20 @@ mod tests {
 
     #[test]
     fn descriptions() {
-        let ts = TokenStream::from_file("./resources/descriptions.pug").unwrap();
+        let ts = TokenBuffer::from_file("./resources/descriptions.pug").unwrap();
+        println!("{:?}", ts);
+    }
+
+    #[test]
+    fn form_instructions() {
+        let ts = TokenBuffer::from_file("./resources/form-instructions.pug").unwrap();
+        println!("{:?}", ts);
+    }
+
+    #[test]
+    fn foreigner_arrival() {
+        let ts =
+            TokenBuffer::from_file("./resources/foreigner-arrival-notification.mf.pug").unwrap();
         println!("{:?}", ts);
     }
 }

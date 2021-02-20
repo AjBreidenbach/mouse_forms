@@ -1,0 +1,432 @@
+language ru
+
+
+
+title(lang='en') Arrival notification
+title Уведомление о прибытии иностранного гражданина
+
+category(lang='en') Migrant registration 
+category Миграционный учет
+
+index 0
+
+description(lang='en') On this page you can fill out our online arrival notification form as well as view samples and submission requirements.  The completed document can be exported directly to PDF or printed using the browser's print dialog.
+description На этой странице Вы сможете заполнить бланк уведомления о прибытии онлайн, а также ознакомиться с образцами и общими условиями его подачи. Готовый документ можно распечатать в PDF-формате или сохранить на компьютер/другое устройство.
+
+dir-description На этой странице Вы сможете заполнить бланк уведомления о прибытии онлайн, а также ознакомиться с образцами и общими условиями его подачи. Готовый документ можно распечатать в PDF-формате или сохранить на компьютер/другое устройство.
+
+
+instructions(lang='en')
+  p Here you can fill out an online notification form, as well as view completed samples.  The resulting document should be submitted to the district / city department of the Ministry of Internal Affairs in person or by mail (if sending by mail, submit two copies).
+  p The deadline for submission is typically 7 days from the moment the foreigner moves in to their Russian address.  There are exceptions to this rule mentioned in our #[a(href='/articles/Migration-record') article regarding this topic].  Note that highly qualified specialists may reside in Russia without submitting an arrival notification for up to 90 days after entry and up to 30 days whenever they change addresses.
+  p Applicants: The landlord, either a Russian individual or legal entity, files this form on behalf of the migrant.
+  p Note: Foreign citizens who have a residence permit and own their residence in Russia can submit the arrival notification themselves.
+  p #[i The residential address is indicated twice in the resulting arrival notification form.  This is handled automatically by Lawclick's software.]
+  
+
+instructions 
+  p Здесь можно заполнить онлайн бланк уведомления о прибытии, а также ознакомиться с готовыми образцами. Распечатанный документ подается районное/городское подразделение МВД лично или направляется по почте (в последнем случае составляется в двух экземплярах).
+  p Общий срок подачи: 7 дней с момента заселения иностранца. Из этого правила есть исключения. Ознакомиться с ними можно в нашей #[a(href='/articles/Migration-record') статье]. Дополнительно отметим, что высококвалифицированные специалисты вправе находиться на территории РФ без постановки на учет в течение 90 дней с момента въезда и 30 дней – с момента заселения при каждом последующем переезде.
+  p Заявители: российские физические и юридические лица, а также иностранные граждане с ВНЖ, которые владеют жилым помещением. Его адрес указывается дважды: в основной и отрывной частях бланка уведомления о прибытии, но в режиме онлайн внести данные нужно всего один раз. Все необходимые поля заполнятся автоматически.
+  p Важно: если принимающая сторона пользуется жилым помещением на правах аренды/найма, то по условиям договора она должна иметь возможность передавать его третьим лицам и осуществлять постановку на миграционный учет. Это прописывается отдельным пунктом.
+  p Те, кто не уверены, как правильно заполнить бланк уведомления о прибытии, могут ознакомиться с образцами для физических и юридических лиц, выбрав в меню #[b Сохранить/Примеры заполнения формы].
+  p На нашем сайте Вы также можете заполнить #[a(href='/forms/foreigner-residence-vacation') Уведомление об убытии иностранного гражданина].
+
+
+
+section(name='individual')
+  instructions(lang='en')
+    p #[b All text fields should be filled in Cyrillic]
+  title(lang='en') Guest information
+  title Сведения о лице
+  field(name='surname' type='text' class='two-thirds-length')
+    label(lang='en') Surname
+    label Фамилия 
+
+  field(name='name' type='text' class='two-thirds-length')
+    label(lang='en') First name
+    label Имя 
+
+  field(name='patronymic' type='text' class='two-thirds-length')
+    label(lang='en') Patronymic (if applicable)
+    label Отчество (при наличии)
+  
+
+  group(type='subsection')
+    field(name='telephone' type='tel' class='half-length')
+      label(lang='en') Phone
+      label Телефон (при наличии)
+    field(name='birth-date' type='date' class='half-length')
+      label(lang='en') Birth date
+      label Дата рождения
+
+    field(name='gender' type='select' class='half-length')
+      label(lang='en') Gender
+      label Пол
+      option(lang='*' name='none') --
+      option(lang='en' name='male') male
+      option(name='male') мужской
+      option(lang='en' name='female') female
+      option(name='female') женский
+
+    field(name='citizenship' type='text' class='half-length')
+      label(lang='en') Citizenship
+      label Гражданство, подданство
+  group(type='subsection' name='birth')
+    title(lang='en') Birth place
+    title Место рождения
+
+    field(name='country' type='text' class='half-length')
+      label(lang='en') Country
+      label Государство
+
+    field(name='city' type='text' class='half-length')
+      label(lang='en') City
+      label Город или другой населенный пункт
+
+  group(type='subsection' name='identification')
+    title(lang='en') Identification documents
+    title Документ, удостоверяющий личность
+    field(name='type' type='text' class='one-third-length')
+      label(lang='en') Document type
+      label вид
+
+    field(name='series'  type='text' length=4 class='one-third-length')
+      label(lang='en') Series (if applicable)
+      label серия
+
+    field(name='number' type='text' class='one-third-length')
+      label(lang='*') №
+      
+    field(name='issue-date' type='date' class='half-length')
+      label(lang='en') Issue date
+      label Дата выдачи
+
+    field(name='validity-date' type='date' class='half-length')
+      label(lang='en') Valid until
+      label Срок действия до
+      instructions 
+        ul #[li заполняется в случае ограничения срока действия документа]
+
+
+section(name='representative')
+  instructions(lang='en')
+    p #[b All text fields should be filled in Cyrillic]
+
+  title(lang='en') Representatives
+  title Сведения о законных представителях
+
+  field(name='surname' type='text' class='two-thirds-length')
+    label(lang='en') Surname
+    label Фамилия
+  
+  field(name='name' type='text' class='two-thirds-length')
+    label(lang='en') Name
+    label Имя
+   
+  field(name='patronymic' type='text' class='two-thirds-length') 
+    label(lang='en') Patronymic (if applicable)
+    label Отчество (при наличии)
+  
+  field(name='birth-date' type='date')
+    label(lang='en') Birth date
+    label Дата рождения
+
+
+section(name='document')
+  title(lang='en') Reason of stay
+  title Право на пребывание
+
+  field(name='type' type='select')
+    label(lang='en') Document, verifying reason
+    label Документ, подтверждающий право на пребывание
+    option(name='none') 
+      label(lang='*') --
+    option(name='visa') 
+      label(lang='en') Visa
+      label Виза
+    option(name='residence') 
+      label(lang='en') Residence permit
+      label Вид на жительство
+    option(name='temporary-residence') 
+      label(lang='en') Temporary residence permit
+      label Разрешение на временное проживание
+
+  group(type='subsection' requires='not document.type#none')
+    field(name='series' length=4  type='text' class='half-length')
+      label(lang='en') Series
+      label Серия
+
+    field(name='number' type='text' class='half-length')
+      label(lang='*') №
+      
+    field(name='issue-date' type='date' class='half-length')
+      label(lang='en') Issue date
+      label Дата выдачи
+
+    field(name='validity-date' type='date' class='half-length')
+      label(lang='en') Valid until (if applicable)
+      label Срок действия до
+      instructions 
+        ul #[li заполняется в случае ограничения срока действия документа]
+  
+  group(type='subsection')
+    title(lang='en') Purpose and duration of stay
+    title Цель и сроки пребывания
+    field(name='purpose' type='select' class='half-length')
+      label(lang='en') Reason of visit
+      label Цель въезда
+      option(name='none') 
+        label(lang='*') --
+      option(name='service') 
+        label(lang='en') service
+        label служебная
+      option(name='tourism') 
+        label(lang='en') tourism
+        label туризм
+      option(name='business') 
+        label(lang='en') business
+        label деловая
+      option(name='study') 
+        label(lang='en') study
+        label учеба
+      option(name='work') 
+        label(lang='en') work
+        label работа
+      option(name='private') 
+        label(lang='en') private
+        label частная
+      option(name='transit') 
+        label(lang='en') transit
+        label транзит
+      option(name='humanitarian') 
+        label(lang='en') humanitarian
+        label гуманитарная
+      option(name='other') 
+        label(lang='en') other
+        label другая
+
+
+    field(name='profession' type='text' class='half-length')
+      label(lang='en') Profession
+      label Профессия
+
+    field(name='arrival-date' type='date' class='half-length')
+      label(lang='en') Arrival date
+      label Дата въезда в РФ
+      
+    field(name='departure-date' type='date' class='half-length')
+      label(lang='en') Departure date
+      label Срок пребывания до
+
+
+  group(type='subsection' name='migration-card')
+    title(lang='en') Migration card
+    title Миграционная карта
+
+    field(name='series' length=4  type='text' class='half-length')
+      label(lang='en') Series
+      label Серия
+
+    field(name='number' type='text' class='half-length')
+      label(lang='*') №
+
+  field(name='old-address' type='textarea')
+      label(lang='en') Former address in Russian Federation
+      label Адрес прежнего места пребывания в РФ
+
+      
+//section(name='old-address')
+  title Адрес прежнего места пребывания в РФ
+  
+  field(name='oblast' type='text' class='full-length')
+    label Область, край, республика, автономный округ (область)
+
+  field(name='region' type='text' class='two-thirds-length')
+    label Район
+
+  field(name='city' type='text' class='two-thirds-length')
+     label Город или другой населенный пункт
+
+  field(name='street' type='text' class='two-thirds-length')
+    label Улица
+
+  group(type='subsection')
+
+    field(name='house-type' type='text' class='half-length') 
+      label Дом, участок, владение и иное
+      
+    field(name='street-number' type='text' class='half-length') 
+      label(lang='*') №
+      
+    field(name='corpus-number' type='text' class='half-length') 
+      label Корпус
+
+    field(name='building-number' type='text' class='half-length')
+      label Строение
+
+    field(name='apartment-type' type='text' class='half-length')
+      label Квартира, комната, офис и т.п.
+    
+    field(name='apartment-number' type='number' class='half-length')
+      label(lang='*') №
+
+section(name='new-address')
+  title(lang='en') Residence information
+  title Сведения о месте пребывания
+  field(name='oblast' type='text' class='full-length')
+    label(lang='en') Oblast (state/province), republic, autonomous region
+    label Область, край, республика, автономный округ (область)
+
+  field(name='region' type='text' class='two-thirds-length')
+    label(lang='en') Region
+    label Район
+
+  field(name='city' type='text' class='two-thirds-length')
+    label(lang='en') City
+    label Город или другой населенный пункт
+
+  field(name='street' type='text' class='two-thirds-length')
+    label(lang='en') Street
+    label Улица
+
+  group(type='subsection')
+
+    field(name='house-type' type='text' class='half-length') 
+      label(lang='en') Building type
+      label Дом, участок, владение и иное
+      
+    field(name='street-number' type='text' class='half-length') 
+      label(lang='*') №
+      
+    field(name='corpus-number' type='text' class='half-length') 
+      label(lang='en') Corpus number
+      label Корпус
+
+    field(name='building-number' type='text' class='half-length')
+      label(lang='en') Building number
+      label Строение
+
+    field(name='apartment-type' type='text' class='half-length')
+      label(lang='en') Apartment type
+      label Квартира, комната, офис и т.п.
+    
+    field(name='apartment-number' type='number' class='half-length')
+      label(lang='*') №
+
+section(name='host')
+  title(lang='en') Host information
+  title Сведения о принимающей стороне
+
+  field(name='type' type='select')
+    label(lang='en') Host
+    label Принимающая сторона
+    option(name='none')
+      label(lang='*') --
+    option(name='person') 
+      label(lang='en') Individual
+      label Физическое лицо
+    option(name='organization') 
+      label(lang='en') Organization
+      label Организация
+  
+  field(name='surname' type='text' class='two-thirds-length')
+    label(lang='en') Surname (if applicable)
+    label Фамилия (при наличии)
+
+  field(name='name' type='text' class='two-thirds-length')
+    label(lang='en') Name (if applicable)
+    label Имя (при наличии) 
+
+  field(name='patronymic' type='text' class='two-thirds-length')
+    label(lang='en') Patronymic (if applicable)
+    label Отчество (при наличии)
+
+  group(type='subsection')
+    field(name='telephone' type='tel' class='half-length')
+      label(lang='en') Telephone (if applicable)
+      label Телефон (при наличии)
+
+    field(name='birth-date' type='date' class='half-length')
+      label(lang='en') Birth date
+      label Дата рождения
+
+
+  group(name='identification' type='subsection')
+    title(lang='en') Identification document
+    title Документ, удостоверяющий личность
+
+    field(name='type' type='text' class='one-third-length')
+      label(lang='en') type
+      label вид
+
+    field(name='series' length=4  type='text' class='one-third-length')
+      label(lang='en') series
+      label серия
+
+    field(name='number' type='text' class='one-third-length')
+      label(lang='*') №
+      
+    field(name='issue-date' type='date' class='half-length')
+      label(lang='en') Issue date
+      label Дата выдачи
+
+    field(name='validity-date' type='date' class='half-length')
+      label(lang='en') Valid until (if applicable)
+      instructions 
+        ul #[li заполняется в случае ограничения срока действия документа]
+      label Срок действия до
+
+  group(name='address' type='subsection')
+    title(lang='en') Residential address
+    title Адрес места жительства
+
+    field(name='oblast' type='text' class='full-length')
+      label(lang='en') Oblast (state/province), republic, autonomous region
+      label Область, край, республика, автономный округ (область)
+
+    field(name='region' type='text' class='two-thirds-length')
+      label(lang='en') Region
+      label Район
+
+    field(name='city' type='text' class='two-thirds-length')
+      label(lang='en') City
+      label Город или другой населенный пункт
+
+    field(name='street' type='text' class='two-thirds-length')
+      label(lang='en') Street
+      label Улица
+
+    field(name='street-number' type='number' class='half-length') 
+      label(lang='en') Street number
+      label Дом
+      
+    field(name='corpus-number' type='number' class='half-length') 
+      label(lang='en') Corpus number
+      label Корпус
+
+    field(name='building-number' type='number' class='half-length')
+      label(lang='en') Building number
+      label Строение
+
+    field(name='apartment-number' type='number' class='half-length')
+      label(lang='en') Unit number
+      label Квартира, комната, офис и т.п.
+
+  
+  field(name='organization-name' type='text' class='full-length' requires='host.type#organization')
+    label(lang='en') Organization name
+    label Наименование организации
+  
+  field(name='organization-number' type='text' requires='host.type#organization')
+    label(lang='en') Tax number
+    label ИНН
+
+  field(name='organization-address' type='textarea' requires='host.type#organization')
+    label(lang='en') Organization address
+    label Адрес организации
+
+  field(name='property-document' type='text' class='full-length')
+    label(lang='en') Deed/Lease agreement
+    label Наименование и реквизиты документа, подтверждающего право пользования жилым или иным помещением
+
