@@ -97,13 +97,13 @@ pub enum Token {
 #[derive(Debug)]
 pub struct TokenBuffer {
     pub tokens: Vec<Token>,
-    alternates: Vec<String>,
+    pub alternates: Vec<String>,
     characters: Option<String>,
     // lang refers to lang attribute
     lang: Option<String>,
     instructions: Option<String>,
     // refers to default language of this form
-    language: Option<String>,
+    pub language: Option<String>,
 }
 
 impl TokenBuffer {
@@ -131,6 +131,17 @@ impl TokenBuffer {
         source: impl Into<PathBuf>,
     ) -> Result<TokenBuffer, Box<dyn std::error::Error>> {
         let pug_options = pug::PugOptions::new().doctype("xml".into());
+        let xml = pug::evaluate_with_options(source, pug_options)?;
+        return Ok(Self::from_readable_xml(xml.as_bytes())?);
+    }
+
+    pub fn from_file_with_obj(
+        source: impl Into<PathBuf>,
+        object: String,
+    ) -> Result<TokenBuffer, Box<dyn std::error::Error>> {
+        let pug_options = pug::PugOptions::new()
+            .doctype("xml".into())
+            .with_object(object);
         let xml = pug::evaluate_with_options(source, pug_options)?;
         return Ok(Self::from_readable_xml(xml.as_bytes())?);
     }
@@ -190,6 +201,13 @@ impl TokenBuffer {
             "field" => Token::FieldEnd,
             "group" => Token::GroupEnd,
             "section" => Token::SectionEnd,
+            "alternates" => {
+                self.alternates = characters
+                    .split(char::is_whitespace)
+                    .map(String::from)
+                    .collect();
+                Token::None
+            }
             _ => Token::None,
         };
 
@@ -233,19 +251,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn descriptions() {
+    fn tokens_descriptions() {
         let ts = TokenBuffer::from_file("./resources/descriptions.pug").unwrap();
         println!("{:?}", ts);
     }
 
     #[test]
-    fn form_instructions() {
+    fn tokens_form_instructions() {
         let ts = TokenBuffer::from_file("./resources/form-instructions.pug").unwrap();
         println!("{:?}", ts);
     }
 
     #[test]
-    fn foreigner_arrival() {
+    fn tokens_foreigner_arrival() {
         let ts =
             TokenBuffer::from_file("./resources/foreigner-arrival-notification.mf.pug").unwrap();
         println!("{:?}", ts);

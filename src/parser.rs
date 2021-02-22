@@ -1,7 +1,7 @@
 use crate::models::*;
 use crate::token::Token;
 use std::convert::TryFrom;
-struct Parser<'a> {
+pub struct Parser<'a> {
     language: Option<String>,
     tokens: &'a Vec<Token>,
     form: Form,
@@ -13,7 +13,8 @@ struct Parser<'a> {
 
 impl<'a> Parser<'a> {
     pub fn new(tokens: &'a Vec<Token>, language: Option<String>) -> Parser<'a> {
-        let form = Form::new();
+        let mut form = Form::new();
+        form.language = language.clone();
         Parser {
             tokens,
             language,
