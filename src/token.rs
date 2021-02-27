@@ -158,6 +158,7 @@ impl TokenBuffer {
             "category" | "description" | "dir-description" | "meta-description" | "title"
             | "label" | "keywords" => self.set_lang(attributes),
             "link" | "script" | "style" | "index" => {}
+            "unlisted" => self.tokens.push(Token::Unlisted),
             "option" => self.tokens.push(Token::Option { attributes }),
             "field" => self.tokens.push(Token::Field { attributes }),
             "group" => self.tokens.push(Token::Group { attributes }),
@@ -171,7 +172,13 @@ impl TokenBuffer {
         }
     }
     fn on_end(&mut self, name: OwnedName) {
-        let lang = self.lang.take().or_else(|| self.language.clone());
+        let lang = self
+            .lang
+            .take()
+            .or_else(|| self.language.clone())
+            .map(|lang| if lang == "*" { None } else { Some(lang) })
+            .flatten();
+
         let mut characters = self.characters.take().unwrap_or_default();
         if let Some(instructions) = self.instructions.take() {
             characters = instructions
