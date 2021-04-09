@@ -90,6 +90,18 @@ impl<'a> Parser<'a> {
                     }
                 }
 
+                Token::ImplicitLabel { characters } => {
+                    if let Some(ref mut option) = self.current_option {
+                        option.label = Some(characters.clone())
+                    } else if let Some(ref mut field) = self.current_field {
+                        field.label = Some(characters.clone())
+                    } else if let Some(ref mut group) = self.current_group {
+                        group.title = Some(characters.clone())
+                    } else if let Some(ref mut section) = self.current_section {
+                        section.title = Some(characters.clone())
+                    }
+                }
+
                 Token::Title { characters, lang } => {
                     if self.lang_matches(lang) {
                         if let Some(ref mut group) = self.current_group {
@@ -218,6 +230,19 @@ mod tests {
             TokenBuffer::from_file("./resources/foreigner-arrival-notification.mf.pug").unwrap();
         let form = Parser::new(&ts.tokens, Some("en".into())).parse().unwrap();
 
+        println!("{}", serde_yaml::to_string(&form).unwrap());
+    }
+    #[test]
+    fn parse_foreigner_data_change() {
+        let ts = TokenBuffer::from_file("./resources/foreigner-data-change.mf.pug").unwrap();
+        let form = Parser::new(&ts.tokens, Some("en".into())).parse().unwrap();
+
+        println!("{}", serde_yaml::to_string(&form).unwrap());
+    }
+    #[test]
+    fn parse_implicit_label() {
+        let ts = TokenBuffer::from_file("./resources/implicit-label.pug").unwrap();
+        let form = Parser::new(&ts.tokens, Some("en".into())).parse().unwrap();
         println!("{}", serde_yaml::to_string(&form).unwrap());
     }
 }

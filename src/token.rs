@@ -60,6 +60,9 @@ pub enum Token {
         characters: String,
         lang: Option<String>,
     },
+    ImplicitLabel {
+        characters: String,
+    },
     Link {
         characters: String,
     },
@@ -104,6 +107,7 @@ pub struct TokenBuffer {
     instructions: Option<String>,
     // refers to default language of this form
     pub language: Option<String>,
+    claimed_characters: bool,
 }
 
 impl TokenBuffer {
@@ -118,6 +122,7 @@ impl TokenBuffer {
             lang: None,
             instructions: None,
             language: None,
+            claimed_characters: false,
         };
 
         for event in event_reader {
@@ -156,8 +161,13 @@ impl TokenBuffer {
     fn on_start(&mut self, name: OwnedName, attributes: Vec<OwnedAttribute>) {
         match name.local_name.as_str() {
             "category" | "description" | "dir-description" | "meta-description" | "title"
-            | "label" | "keywords" => self.set_lang(attributes),
-            "link" | "script" | "style" | "index" => {}
+            | "label" | "keywords" => {
+                self.set_lang(attributes);
+                self.claimed_characters = true
+            }
+            "link" | "script" | "style" | "index" | "alternates" | "language" => {
+                self.claimed_characters = true
+            }
             "unlisted" => self.tokens.push(Token::Unlisted),
             "option" => self.tokens.push(Token::Option { attributes }),
             "field" => self.tokens.push(Token::Field { attributes }),
@@ -165,13 +175,16 @@ impl TokenBuffer {
             "section" => self.tokens.push(Token::Section { attributes }),
             "instructions" => {
                 self.set_lang(attributes);
+                self.claimed_characters = true;
                 self.instructions = Some(String::new());
             }
 
-            _ => {} // TODO error
+            //n => panic!(String::from(n)), // TODO error
+            _ => {}
         }
     }
     fn on_end(&mut self, name: OwnedName) {
+        self.claimed_characters = false;
         let lang = self
             .lang
             .take()
@@ -179,7 +192,7 @@ impl TokenBuffer {
             .map(|lang| if lang == "*" { None } else { Some(lang) })
             .flatten();
 
-        let mut characters = self.characters.take().unwrap_or_default();
+        let mut characters = self.characters.take().unwrap_or_default().trim().into();
         if let Some(instructions) = self.instructions.take() {
             characters = instructions
         }
@@ -247,7 +260,13 @@ impl TokenBuffer {
                 namespace,
             } => self.on_start(name, attributes),
             XmlEvent::EndElement { name } => self.on_end(name),
-            XmlEvent::Characters(characters) => self.characters = Some(characters),
+            XmlEvent::Characters(characters) => {
+                if !self.claimed_characters {
+                    self.tokens.push(Token::ImplicitLabel { characters })
+                } else {
+                    self.characters = Some(characters)
+                }
+            }
             _ => {}
         }
     }
@@ -273,6 +292,14 @@ mod tests {
     fn tokens_foreigner_arrival() {
         let ts =
             TokenBuffer::from_file("./resources/foreigner-arrival-notification.mf.pug").unwrap();
+        assert!(ts.alternates.len() > 0);
+        assert_eq!(ts.language.as_ref().unwrap(), "ru");
+        println!("{:?}", ts);
+    }
+
+    #[test]
+    fn tokens_implicit_label() {
+        let ts = TokenBuffer::from_file("./resources/implicit-label.pug").unwrap();
         println!("{:?}", ts);
     }
 }

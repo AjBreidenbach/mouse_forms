@@ -1,0 +1,80 @@
+title Заявление об изменении сведений об иностранном гражданине в РФ
+
+category Миграционный учет
+index 2
+
+language ru
+description Подается в органы внутренних дел в случае, когда после постановки на миграционный учет изменились: цель въезда, ФИО,  професия, гражданство, а также ряд иных сведений об иностранном гражданине (статья 9 Федерального закона "О миграционном учете").
+
+section(name='application')
+  title Заявление
+
+  field(name='office-name' type='text' class='full-length' placeholder=' ОВМ Отдела МВД России по району Ивановское г. Москвы')
+    label Наименование отдела по вопросам миграции
+
+  field(name='officer-name' type='text' class='full-length' placeholder='Петрову Петру Петровичу')
+    label ФИО начальника отдела по вопросам миграции
+
+  field(name='applicant-name' type='text' class='full-length' placeholder='Иванова Ивана Ивановича')
+    label ФИО заявителя
+
+  field(name='applicant-birth-date' type='date' class='half-length')
+    label Дата рождения заявителя
+
+  field(name='foreigner-name' type='text' class='full-length' placeholder='Роуэн Аткинсон')
+    label ФИО иностранного гражданина
+
+  field(name='foreigner-birth-date' type='date' class='two-thirds-length')
+    label Дата рождения иностранного гражданина
+
+  field(name='foreigner-citizenship' type='text' class='full-length' placeholder='Великобритания')
+    label Гражданство иностранного гражданина
+ 
+  group(name='change' type='subsection')
+    title Изменение
+
+    field(name='identity-document' type='checkbox')
+      label вид и реквизиты документа, удостоверяющего личность и признаваемого Российской Федерацией в этом качестве;
+
+    field(name='evidence-document' type='checkbox')
+      label вид и реквизиты документа, подтверждающего право на пребывание (проживание) в Российской Федерации;
+
+    field(name='name' type='checkbox')
+      label фамилия, имя, отчество (последние при наличии)
+
+    field(name='birth' type='checkbox')
+      label дата и место рождения
+
+    field(name='gender' type='checkbox')
+      label пол
+
+    field(name='citizenship' type='checkbox')
+      label гражданство (подданство)
+
+    field(name='entry-purpose' type='checkbox')
+      label цель въезда в Российскую Федерацию
+
+    field(name='profession' type='checkbox')
+      label профессия
+
+    field(name='representative' type='checkbox')
+      label сведения о законных представителях
+
+  group
+    title Сроки постановки на миграционный учет:
+
+    field(name='start-date' type='date' class='half-length')
+      label с
+
+    field(name='end-date' type='date' class='half-length')
+      label по
+
+
+  field(name='address' type='text' class='full-length' placeholder='105568, г. Москва, ул. Цветочная, д. 3, кв. 7')
+    label Адрес постановки на миграционный учет
+
+
+  field(name='copy' type='text' class='full-length' placeholder='паспорт № 58695078')
+    label Наименование документа, подтверждающего изменение сведений об иностранном гражданине 
+
+
